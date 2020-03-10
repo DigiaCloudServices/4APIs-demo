@@ -58,12 +58,12 @@ export class SensorsViewElement extends LitElement {
     } else {
       return html`
         <vaadin-grid id="grid" class="splitLayout" theme="no-border" .items=${this.readings}>
-          <vaadin-grid-column path="locationId" header="Location"></vaadin-grid-column>
-          <vaadin-grid-column path="sensorCategory" header="Category"></vaadin-grid-column>
-          <vaadin-grid-column path="sensorAttribute" header="Attribute"></vaadin-grid-column>
-          <vaadin-grid-column path="time" header="Time"></vaadin-grid-column>
-          <vaadin-grid-column path="value" header="Value"></vaadin-grid-column>
-          <vaadin-grid-column path="unit" header="Unit"></vaadin-grid-column>
+          <vaadin-grid-column auto-width path="locationId" header="Location"></vaadin-grid-column>
+          <vaadin-grid-column auto-width path="sensorCategory" header="Category"></vaadin-grid-column>
+          <vaadin-grid-column auto-width path="sensorAttribute" header="Attribute"></vaadin-grid-column>
+          <vaadin-grid-column auto-width path="time" header="Time"></vaadin-grid-column>
+          <vaadin-grid-column auto-width path="value" header="Value"></vaadin-grid-column>
+          <vaadin-grid-column auto-width path="unit" header="Unit"></vaadin-grid-column>
         </vaadin-grid>      
       `;
     }
