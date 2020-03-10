@@ -1,69 +1,51 @@
 package com.example.application.endpoints;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
-import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 
 import com.example.application.backend.SensorData;
 import com.vaadin.flow.server.connect.Endpoint;
 import com.vaadin.flow.server.connect.auth.AnonymousAllowed;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
 @Endpoint
 @AnonymousAllowed
 public class Sensors {
-  public List<SensorData> getSensorReadings(@Nullable String locationId) {
-    ArrayList<SensorData> readings = new ArrayList<>();
+  private final RestTemplate restTemplate = new RestTemplate();
+  
+  @Value("${4apis.api.key:}")
+  private String apiKey;
 
-    if (locationId == null || "2105".equals(locationId)) {
-        SensorData reading1 = new SensorData();
-        reading1.setSiteId("Ypsilon");
-        reading1.setLocationId("2105");
-        reading1.setSensorCategory("Exhaust air");
-        reading1.setSensorAttribute("Temperature");
-        reading1.setUnit("°C");
-        reading1.setTime(LocalDateTime.of(2020, Month.JANUARY, 28, 13, 30).atZone(ZoneId.of("Europe/Helsinki")).toInstant());
-        reading1.setValue(20.6);
-    
-        SensorData reading2 = new SensorData();
-        reading2.setSiteId("Ypsilon");
-        reading2.setLocationId("2105");
-        reading2.setSensorCategory("Exhaust air");
-        reading2.setSensorAttribute("Humidity");
-        reading2.setUnit("%");
-        reading2.setTime(LocalDateTime.of(2020, Month.JANUARY, 28, 13, 26).atZone(ZoneId.of("Europe/Helsinki")).toInstant());
-        reading2.setValue(38.7);
-        
-        readings.add(reading1);
-        readings.add(reading2);
+  public Sensors() {
+    // Custom configuration to use Jackson despite the text/plain response type
+    MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+    converter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_PLAIN));
+    restTemplate.setMessageConverters(Arrays.asList(converter));
+  }
+
+  @PostConstruct
+  private void validateKey() {
+    if (apiKey == null || apiKey.trim().isEmpty()) {
+      throw new IllegalStateException("You must define 4apis.api.key in application.properties: " + apiKey);
     }
+  }
 
-    if (locationId == null || "2321".equals(locationId)) {
-        SensorData reading1 = new SensorData();
-        reading1.setSiteId("Ypsilon");
-        reading1.setLocationId("2321");
-        reading1.setSensorCategory("Exhaust air");
-        reading1.setSensorAttribute("Temperature");
-        reading1.setUnit("°C");
-        reading1.setTime(LocalDateTime.of(2020, Month.JANUARY, 28, 13, 18).atZone(ZoneId.of("Europe/Helsinki")).toInstant());
-        reading1.setValue(21.2);
+  public SensorData[] getSensorReadings(String locationId) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Ocp-Apim-Subscription-Key", apiKey);
+    HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
     
-        SensorData reading2 = new SensorData();
-        reading2.setSiteId("Ypsilon");
-        reading2.setLocationId("2321");
-        reading2.setSensorCategory("Exhaust air");
-        reading2.setSensorAttribute("Humidity");
-        reading2.setUnit("%");
-        reading2.setTime(LocalDateTime.of(2020, Month.JANUARY, 28, 13, 22).atZone(ZoneId.of("Europe/Helsinki")).toInstant());
-        reading2.setValue(41.7);
-        
-        readings.add(reading1);
-        readings.add(reading2);        
-    }
+    ResponseEntity<SensorData[]> result = restTemplate.exchange("https://businessfinland-4apis.azure-api.net/api/measurements/{locationId}", HttpMethod.GET, entity, SensorData[].class, locationId);
 
-    return readings;
+    return result.getBody();
   }
 }
