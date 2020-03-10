@@ -38,7 +38,7 @@ export class SensorsViewElement extends LitElement {
     return html`
       <vaadin-split-layout>
         <div id="editor-layout">
-          <img src="ypsilon.png">
+          <iframe style="max-width: 768px; height: 432px; width: 100%; border: none" allow="fullscreen" src="https://showroom.vertex.fi:8443/model-viewer-frame.html?model=8dd961ba-37e2-4bfc-a4af-e4fd67ca0d3d&link=284b0eac-ce7f-4dc0-b170-f52c1bff6746" allowfullscreen></iframe>
           <a href="sensors/2105">2105</a>
           <a href="sensors/3032">3032</a>
           <a href="sensors/3060">3060</a>

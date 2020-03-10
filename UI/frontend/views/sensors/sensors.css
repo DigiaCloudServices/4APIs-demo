@@ -6,8 +6,8 @@
 
 #editor-layout {
     padding: var(--lumo-space-l);
-    width: 825px;
-    max-width: 825px;
+    width: 768px;
+    max-width: 768px;
 }
 
 #editor-layout > img {
